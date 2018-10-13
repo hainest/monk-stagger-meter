@@ -98,16 +98,6 @@ local function disable()
   end
 end
 
-local function checkStaggerFrame()
-  --autohide if enabled in config
-  if staggerFrame:IsShown() and
-		not UnitDebuff('player', Enums.LightStagger.name) and
-		not UnitDebuff('player', Enums.ModerateStagger.name) and
-		not UnitDebuff('player', Enums.HeavyStagger.name) then
-    stagger.unset()
-  end
-end
-
 local function checkbox(label, desc)
   local check = CreateFrame('CheckButton', addonName .. label, configPanel, 'InterfaceOptionsCheckButtonTemplate')
   check.label = _G[check:GetName() .. 'Text']
@@ -131,23 +121,18 @@ end)
 
 local configAutoHide = checkbox('Auto Hide', 'Hides meter when not staggering damage.') 
 configAutoHide:SetPoint('TOPLEFT', 10, -270)
-configAutoHide:SetScript('PostClick', checkStaggerFrame)
 
 local configHideBorder = checkbox('Hide Border', 'Hides meter border.') 
 configHideBorder:SetPoint('TOPLEFT', 10, -300)
-configHideBorder:SetScript('PostClick', checkStaggerFrame)
 
 local configHideBackground = checkbox('Hide Background', 'Hides meter background.') 
 configHideBackground:SetPoint('TOPLEFT', 10, -330)
-configHideBackground:SetScript('PostClick', checkStaggerFrame)
 
 local configMovable = checkbox('Movable', 'Allows you to move meter when not in combat.') 
 configMovable:SetPoint('TOPLEFT', 10, -360)
-configMovable:SetScript('PostClick', checkStaggerFrame)
 
 local configHeavyWarn = checkbox('Heavy Alarm', 'Plays a warning sound when reaching heavy stagger.') 
 configHeavyWarn:SetPoint('TOPLEFT', 10, -390)
-configHeavyWarn:SetScript('PostClick', checkStaggerFrame)
 
 local function createSlider(text, props, name, tip, x, y, anchor)
 
@@ -342,7 +327,6 @@ end
 
 function events:PLAYER_REGEN_ENABLED()
   stagger.inCombat = false
-  checkStaggerFrame()
 end
 
 function events:COMBAT_LOG_EVENT(...)
