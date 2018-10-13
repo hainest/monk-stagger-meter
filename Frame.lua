@@ -20,21 +20,21 @@ end
 
 local events = {}
 local defaultConfig = {
-	opacity = 100,
-    autoHide = true,
-    movable = true,
-	hideBorder = false,
-	hideBackground = false,
-	heavyWarn = true,
-	levels = {
-		Light=0,
-		Medium=6,
-		Heavy=11
-	}
+  opacity = 100,
+  autoHide = true,
+  movable = true,
+  hideBorder = false,
+  hideBackground = false,
+  heavyWarn = true,
+  levels = {
+    Light=0,
+    Medium=6,
+    Heavy=11
+  }
 }
 local backdrop = {
   -- path to the background texture
-  bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background-Dark",  
+  bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background-Dark",
   -- path to the border texture
   edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
   -- true to repeat the background texture to fill the frame, false to scale it
@@ -52,18 +52,18 @@ local backdrop = {
   }
 }
 local function deepcopy(orig)
-    local orig_type = type(orig)
-    local copy
-    if orig_type == 'table' then
-        copy = {}
-        for orig_key, orig_value in next, orig, nil do
-            copy[deepcopy(orig_key)] = deepcopy(orig_value)
-        end
-        setmetatable(copy, deepcopy(getmetatable(orig)))
-    else -- number, string, boolean, etc
-        copy = orig
+  local orig_type = type(orig)
+  local copy
+  if orig_type == 'table' then
+    copy = {}
+    for orig_key, orig_value in next, orig, nil do
+      copy[deepcopy(orig_key)] = deepcopy(orig_value)
     end
-    return copy
+    setmetatable(copy, deepcopy(getmetatable(orig)))
+  else -- number, string, boolean, etc
+    copy = orig
+  end
+  return copy
 end
 
 local staggerFrame = CreateFrame('Frame', 'StaggerFrame', UIParent)
@@ -119,19 +119,19 @@ configReposition:SetScript('OnClick', function()
   stagger.reposition()
 end)
 
-local configAutoHide = checkbox('Auto Hide', 'Hides meter when not staggering damage.') 
+local configAutoHide = checkbox('Auto Hide', 'Hides meter when not staggering damage.')
 configAutoHide:SetPoint('TOPLEFT', 10, -270)
 
-local configHideBorder = checkbox('Hide Border', 'Hides meter border.') 
+local configHideBorder = checkbox('Hide Border', 'Hides meter border.')
 configHideBorder:SetPoint('TOPLEFT', 10, -300)
 
-local configHideBackground = checkbox('Hide Background', 'Hides meter background.') 
+local configHideBackground = checkbox('Hide Background', 'Hides meter background.')
 configHideBackground:SetPoint('TOPLEFT', 10, -330)
 
-local configMovable = checkbox('Movable', 'Allows you to move meter when not in combat.') 
+local configMovable = checkbox('Movable', 'Allows you to move meter when not in combat.')
 configMovable:SetPoint('TOPLEFT', 10, -360)
 
-local configHeavyWarn = checkbox('Heavy Alarm', 'Plays a warning sound when reaching heavy stagger.') 
+local configHeavyWarn = checkbox('Heavy Alarm', 'Plays a warning sound when reaching heavy stagger.')
 configHeavyWarn:SetPoint('TOPLEFT', 10, -390)
 
 local function createSlider(text, props, name, tip, x, y, anchor)
@@ -148,47 +148,46 @@ local function createSlider(text, props, name, tip, x, y, anchor)
   getglobal(slider:GetName() .. 'High'):SetText('100')
 
   slider:SetScript('OnShow', function (self)
-    
-    local i, prop, ref, configValue, configProp
-    for i = 1, #props do
-      if nil == configValue then
-        configValue = session[props[i]]
-      else
-        ref = configValue
-        configProp = props[i]
-        configValue = ref[configProp]
+
+      local i, prop, ref, configValue, configProp
+      for i = 1, #props do
+        if nil == configValue then
+          configValue = session[props[i]]
+        else
+          ref = configValue
+          configProp = props[i]
+          configValue = ref[configProp]
+        end
       end
-    end
-    
-    local title = self:CreateFontString(nil, 'ARTWORK', 'GameFontNormal')
-    title:SetText(text .. ':')
-    title:SetPoint('TOPLEFT', slider, 'TOPLEFT', 0, 16)
-    title:Show()
-    titleWidth = title:GetWidth()
 
-    local value = self:CreateFontString(nil, 'ARTWORK', 'GameFontWhite')
-    value:SetPoint('TOPLEFT', slider, 'TOPLEFT', titleWidth + 6, 16)
-    value:Show()
+      local title = self:CreateFontString(nil, 'ARTWORK', 'GameFontNormal')
+      title:SetText(text .. ':')
+      title:SetPoint('TOPLEFT', slider, 'TOPLEFT', 0, 16)
+      title:Show()
+      titleWidth = title:GetWidth()
 
-    --update saved vars
+      local value = self:CreateFontString(nil, 'ARTWORK', 'GameFontWhite')
+      value:SetPoint('TOPLEFT', slider, 'TOPLEFT', titleWidth + 6, 16)
+      value:Show()
 
-    self.title = title
-    self.value = value
-    self.name = name
-    self.configRef = ref
-    self.configProp = configProp
+      --update saved vars
+      self.title = title
+      self.value = value
+      self.name = name
+      self.configRef = ref
+      self.configProp = configProp
 
-    self:SetScript('OnValueChanged', self.updateValue)
-    self:SetScript('OnShow', nil)
-    dbg('upadting value', configValue)
-    self:SetValue(configValue)
-    self.updateValue(self, configValue)
+      self:SetScript('OnValueChanged', self.updateValue)
+      self:SetScript('OnShow', nil)
+      dbg('upadting value', configValue)
+      self:SetValue(configValue)
+      self.updateValue(self, configValue)
   end)
 
   return slider
 end
 
-local configOpacity = createSlider('Opacity', {'opacity'}, 'OpacitySlider', 'adjust display opacity', 0, -32, configTitle) 
+local configOpacity = createSlider('Opacity', {'opacity'}, 'OpacitySlider', 'adjust display opacity', 0, -32, configTitle)
 configOpacity.updateValue = function (self, value)
   dbg('updating opacity: ', value)
   value = math.floor(value)
@@ -283,7 +282,6 @@ staggerAmount.text:SetFontObject('GameFontHighlight')
 staggerAmount.text:SetTextHeight(13)
 staggerAmount:SetPoint('TOP', statusbar, 'CENTER', 0, 30)
 
-
 local function setStatus(message)
   status.text:SetText(message)
 end
@@ -318,12 +316,12 @@ local function GetStaggerDamage()
 end
 
 function events:COMBAT_LOG_EVENT_UNFILTERED()
-	local _, event, _, _, _, _, _, DestGUID, _, _, _, _, debuff = CombatLogGetCurrentEventInfo()
+  local _, event, _, _, _, _, _, DestGUID, _, _, _, _, debuff = CombatLogGetCurrentEventInfo()
   --dbg(combatEvent, debuff, amount)
   if DestGUID ~= UnitGUID("player") then
-  	return
+    return
   end
-  
+
   if event == "SPELL_AURA_REMOVED" and string.find(debuff, 'Stagger') then
     stagger.unset()
     return
@@ -331,7 +329,7 @@ function events:COMBAT_LOG_EVENT_UNFILTERED()
 
   --[[
     Don't start the damage meter until after we get a SPELL_PERIODIC_DAMAGE
-    
+
     From WoWpedia (https://wow.gamepedia.com/API_UnitDebuff):
        UnitAura-based queries may not be accurate immediately after casting a
        spell that applies an aura to its target.
@@ -339,9 +337,9 @@ function events:COMBAT_LOG_EVENT_UNFILTERED()
   if event == "SPELL_AURA_APPLIED"
     and string.find(debuff, 'Stagger')
     and not staggerFrame:IsShown() then
-       staggerFrame:Show()
+    staggerFrame:Show()
     return
-   end
+  end
 
   if event == "SPELL_PERIODIC_DAMAGE" and string.find(debuff, 'Stagger') then
     local damage = GetStaggerDamage()
@@ -356,7 +354,7 @@ function events:COMBAT_LOG_EVENT_UNFILTERED()
     end
     staggerAmount.text:SetText(percent .. '% : ' .. damage)
   end
-  
+
   if not staggerFrame:IsShown() then
     staggerFrame:Show()
   end
@@ -365,14 +363,14 @@ end
 stagger.soundPlayed = false
 stagger.warn = {
   light = function(self)
-    stagger.soundPlayed = false    
+    stagger.soundPlayed = false
     setStatus('Light Stagger')
     setFont('GameFontGreen')
     statusbar:SetStatusBarColor(0,1,0)
     statusbar:SetValue(1)
   end,
   medium = function(self)
-	stagger.soundPlayed = false
+    stagger.soundPlayed = false
     setStatus('Medium Stagger')
     setFont('GameFontNormal')
     statusbar:SetStatusBarColor(1,0.8,0)
@@ -380,9 +378,9 @@ stagger.warn = {
   end,
   heavy = function(self)
     if session.heavyWarn and not stagger.soundPlayed then
-	  stagger.soundPlayed = true
-	  PlaySound(Enums.RaidWarningSoundKitId, 'Master')
-	end 
+      stagger.soundPlayed = true
+      PlaySound(Enums.RaidWarningSoundKitId, 'Master')
+    end
     setStatus('Heavy Stagger')
     setFont('GameFontRed')
     statusbar:SetStatusBarColor(1,0,0)
@@ -401,7 +399,6 @@ stagger.unset = function(self)
   staggerAmount.text:SetText("")
 end
 
-
 --set global variables
 function setVariables()
   dbg('Setting variables!')
@@ -419,14 +416,14 @@ function setVariables()
   configHideBackground:SetChecked(session.hideBackground)
   configHeavyWarn:SetChecked(session.heavyWarn)
   if not session.hideBorder then
-	staggerFrame:SetBackdropBorderColor(1, 1, 1, 0.7)
+    staggerFrame:SetBackdropBorderColor(1, 1, 1, 0.7)
   else
-	staggerFrame:SetBackdropBorderColor(1, 1, 1, 0)
+    staggerFrame:SetBackdropBorderColor(1, 1, 1, 0)
   end
   if not session.hideBackground then
     staggerFrame:SetBackdropColor(1, 1, 1, 0.5)
   else
-	staggerFrame:SetBackdropColor(1, 1, 1, 0)
+    staggerFrame:SetBackdropColor(1, 1, 1, 0)
   end
 end
 
@@ -475,14 +472,14 @@ configPanel.okay = function ()
     staggerFrame:Show()
   end
   if not spkStaggerConfig.hideBorder then
-	staggerFrame:SetBackdropBorderColor(1, 1, 1, 0.7)
+    staggerFrame:SetBackdropBorderColor(1, 1, 1, 0.7)
   else
-	staggerFrame:SetBackdropBorderColor(1, 1, 1, 0)
+    staggerFrame:SetBackdropBorderColor(1, 1, 1, 0)
   end
   if not spkStaggerConfig.hideBackground then
     staggerFrame:SetBackdropColor(1, 1, 1, 0.5)
   else
-	staggerFrame:SetBackdropColor(1, 1, 1, 0)
+    staggerFrame:SetBackdropColor(1, 1, 1, 0)
   end
 end
 
@@ -504,15 +501,15 @@ end
 
 staggerFrame.OnMouseDown = function(self, button)
   if configMovable:GetChecked() and not stagger.inCombat and not self.isMoving then
-   self:StartMoving()
-   self.isMoving = true
+    self:StartMoving()
+    self.isMoving = true
   end
 end
 
 staggerFrame.OnMouseUp = function(self, button)
   if configMovable:GetChecked() and self.isMoving then
-   self:StopMovingOrSizing()
-   self.isMoving = false
+    self:StopMovingOrSizing()
+    self.isMoving = false
   end
 end
 
@@ -542,7 +539,7 @@ staggerFrame:SetScript('OnEvent', function(self, event, unit, ...)
           break
         end
       end
-      if (not interfaceExists) then 
+      if (not interfaceExists) then
         InterfaceOptions_AddCategory(configPanel)
 
         --InterfaceOptionsFrame_Show()
@@ -558,7 +555,7 @@ staggerFrame:SetScript('OnEvent', function(self, event, unit, ...)
     end
   end
   -- event must be combat type or on player
-  if events[event] then 
+  if events[event] then
     events[event](self, ...) -- call one of the functions above
   end
 end)
