@@ -564,3 +564,9 @@ end)
 staggerFrame:RegisterEvent('PLAYER_ENTERING_WORLD')
 staggerFrame:RegisterEvent('ACTIVE_TALENT_GROUP_CHANGED')
 staggerFrame:RegisterEvent('ADDON_LOADED')
+
+SLASH_MONKSTAGGERMETER1 = "/monkstaggermeter"
+function SlashCmdList.MONKSTAGGERMETER(msg)
+  InterfaceOptionsFrame_Show()
+  InterfaceOptionsFrame_OpenToCategory(configPanel.name)
+end
