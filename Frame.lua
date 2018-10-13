@@ -1,7 +1,6 @@
 -- Author: Sparkida
 local addonName, addon = ...
 local Enums = addon.Enums
-local i, k, v
 local session={}
 local stagger={
   loaded = false,
