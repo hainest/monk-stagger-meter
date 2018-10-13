@@ -398,6 +398,7 @@ stagger.unset = function(self)
   stagger.soundPlayed = false
   setFont('GameFontHighlightSmall')
   statusbar:SetValue(0)
+  staggerAmount.text:SetText("")
 end
 
 
