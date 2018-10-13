@@ -290,6 +290,9 @@ end
 
 function events:PLAYER_REGEN_DISABLED()
   stagger.inCombat = true
+  if configAutoHide:GetChecked() then
+    staggerFrame:Hide()
+  end
 end
 
 function events:PLAYER_REGEN_ENABLED()
