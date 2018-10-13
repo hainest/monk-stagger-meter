@@ -562,8 +562,5 @@ end)
 
 
 staggerFrame:RegisterEvent('PLAYER_ENTERING_WORLD')
-staggerFrame:RegisterEvent('PLAYER_ENTERING_WORLD')
 staggerFrame:RegisterEvent('ACTIVE_TALENT_GROUP_CHANGED')
 staggerFrame:RegisterEvent('ADDON_LOADED')
-staggerFrame:RegisterEvent('PLAYER_REGEN_ENABLED')
-staggerFrame:RegisterEvent('PLAYER_REGEN_DISABLED')
