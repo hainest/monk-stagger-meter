@@ -329,9 +329,12 @@ function events:PLAYER_REGEN_ENABLED()
   stagger.inCombat = false
 end
 
-function events:COMBAT_LOG_EVENT(...)
+function events:COMBAT_LOG_EVENT_UNFILTERED()
   local combatEvent, p1, p2, p3, p4, p5, p6, p7, p8, p9, spellId, debuff, rank, amount, p11, p12, p13, p14, p15 = ...
   --dbg(combatEvent, debuff, amount)
+  if DestGUID ~= UnitGUID("player") then
+  	return
+  end
   if debuff ~= Enums.Stagger.name then
     return
   end
