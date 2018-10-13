@@ -209,7 +209,6 @@ configStagger.update = function (self, value)
   local levels = session.levels
 
   levels[stype] = value
-  --self.configRef[stype] = value
   configStagger[stype].value:SetText(value .. '%')
   if stype == 'Light' then
     if levels.Medium <= levels.Light then
@@ -290,15 +289,8 @@ local function setFont(font)
   status.text:SetFontObject(font)
 end
 
---PLAYER_LEAVING_WORLD
---staggerFrame:RegisterEvent('PLAYER_LOGOUT')
-
 function events:PLAYER_REGEN_DISABLED()
   stagger.inCombat = true
-  --disable moving of stagger frame if entering combat
-  --if staggerFrame.isMoving then
-  --  staggerFrame.OnMouseUp(staggerFrame, 'LeftButton')
-  --end
 end
 
 function events:PLAYER_REGEN_ENABLED()
@@ -317,7 +309,7 @@ end
 
 function events:COMBAT_LOG_EVENT_UNFILTERED()
   local _, event, _, _, _, _, _, DestGUID, _, _, _, _, debuff = CombatLogGetCurrentEventInfo()
-  --dbg(combatEvent, debuff, amount)
+
   if DestGUID ~= UnitGUID("player") then
     return
   end
@@ -541,9 +533,6 @@ staggerFrame:SetScript('OnEvent', function(self, event, unit, ...)
       end
       if (not interfaceExists) then
         InterfaceOptions_AddCategory(configPanel)
-
-        --InterfaceOptionsFrame_Show()
-        --InterfaceOptionsFrame_OpenToCategory(configPanel.name)
       end
     end
     -- only run addon if Monk:Brewmaster
