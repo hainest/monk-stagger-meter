@@ -464,6 +464,8 @@ configPanel.okay = function ()
   spkStaggerConfig.levels.Heavy = configStagger.Heavy:GetValue()
   if not spkStaggerConfig.autoHide then
     staggerFrame:Show()
+  else
+    staggerFrame:Hide()
   end
   if not spkStaggerConfig.hideBorder then
     staggerFrame:SetBackdropBorderColor(1, 1, 1, 0.7)
