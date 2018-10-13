@@ -288,28 +288,6 @@ local function setStatus(message)
   status.text:SetText(message)
 end
 
-
-local function setDamage(tickDamage, remainingDamage, percentStaggered, hp, debuff, bypass)
-  dbg('update: ', tickDamage, remainingDamage, percentStaggered, hp, debuff, bypass)
-  percent = math.ceil(percentStaggered * 100)
-  dbg('percent: %', percent)
-  if not bypass then
-    if percent >= session.levels.Heavy then
-        stagger.warn.heavy()
-    elseif percent >= session.levels.Medium then
-        stagger.warn.medium()
-    elseif percent >= session.levels.Light then
-        stagger.warn.light()
-    end
-  end
-  if nil == remainingDamage or tickDamage == remainingDamage then
-    remainingDamage = 0
-    percent = 0
-    stagger.unset()
-  end
-  staggerAmount.text:SetText(percent .. '% : ' .. remainingDamage)
-end
-
 local function setFont(font)
   status.text:SetFontObject(font)
 end
@@ -329,37 +307,60 @@ function events:PLAYER_REGEN_ENABLED()
   stagger.inCombat = false
 end
 
+local function GetStaggerDamage()
+  for i=1,40 do
+    name, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, remainingDamage = UnitAura("player", i, "PLAYER HARMFUL NOT_CANCELABLE")
+    if name and string.find(name, 'Stagger') then
+      return remainingDamage
+    end
+  end
+  return 0
+end
+
 function events:COMBAT_LOG_EVENT_UNFILTERED()
 	local _, event, _, _, _, _, _, DestGUID, _, _, _, _, debuff = CombatLogGetCurrentEventInfo()
   --dbg(combatEvent, debuff, amount)
   if DestGUID ~= UnitGUID("player") then
   	return
   end
-  if debuff ~= Enums.Stagger.name then
+  
+  if event == "SPELL_AURA_REMOVED" and string.find(debuff, 'Stagger') then
+    stagger.unset()
     return
   end
+
+  --[[
+    Don't start the damage meter until after we get a SPELL_PERIODIC_DAMAGE
+    
+    From WoWpedia (https://wow.gamepedia.com/API_UnitDebuff):
+       UnitAura-based queries may not be accurate immediately after casting a
+       spell that applies an aura to its target.
+  ]]
+  if event == "SPELL_AURA_APPLIED"
+    and string.find(debuff, 'Stagger')
+    and not staggerFrame:IsShown() then
+       staggerFrame:Show()
+    return
+   end
+
+  if event == "SPELL_PERIODIC_DAMAGE" and string.find(debuff, 'Stagger') then
+    local damage = GetStaggerDamage()
+    local hp = UnitHealthMax('player')
+    local percent = math.ceil(damage / hp * 100)
+    if percent >= session.levels.Heavy then
+      stagger.warn.heavy()
+    elseif percent >= session.levels.Medium then
+      stagger.warn.medium()
+    elseif percent >= session.levels.Light then
+      stagger.warn.light()
+    end
+    staggerAmount.text:SetText(percent .. '% : ' .. damage)
+  end
+  
   if not staggerFrame:IsShown() then
-      staggerFrame:Show()
-  end
-  local hp = UnitHealthMax('player')
-  totalStaggerAmount = amount * 20
-  percentStaggered = totalStaggerAmount / hp
-  if percentStaggered < 0.3 then
-    debuff = Enums.LightStagger.name
-  elseif percentStaggered < 0.6 then
-    debuff = Enums.ModerateStagger.name
-  else
-    debuff = Enums.HeavyStagger.name
-  end
-  name, rank, icon, count, dispelType, duration, expires, caster, isStealable, 
-  nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, _, nameplateShowAll, timeMod, tickDamage, remainingDamage, value3 = UnitDebuff('player', debuff)
-  if not stagger.inCombat and (nil == expires or expires - 3.0 < GetTime()) then
-    setDamage(0, 0, 0, nil, nil)
-  else
-    setDamage(tickDamage, remainingDamage, percentStaggered, hp, debuff)
+    staggerFrame:Show()
   end
 end
-
 
 stagger.soundPlayed = false
 stagger.warn = {
